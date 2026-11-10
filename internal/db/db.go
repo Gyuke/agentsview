@@ -2029,6 +2029,7 @@ var readOnlyRequiredTables = []string{
 	"insights",
 	"pinned_messages",
 	"starred_sessions",
+	"rag_benchmark_verdicts",
 	"excluded_sessions",
 	"worktree_project_mappings",
 	"session_project_assignments",

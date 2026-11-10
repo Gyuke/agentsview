@@ -137,6 +137,49 @@ func TestStoreStarsAndPins(t *testing.T) {
 	assert.Empty(t, pins)
 }
 
+func TestStoreBenchmarkVerdictLifecycle(t *testing.T) {
+	pgURL := testPGURL(t)
+
+	const schema = "agentsview_benchmark_verdict_test"
+	cleanNamedPGSchema(t, pgURL, schema)
+	t.Cleanup(func() { cleanNamedPGSchema(t, pgURL, schema) })
+
+	store, err := NewStore(pgURL, schema, true)
+	require.NoError(t, err, "NewStore")
+	defer store.Close()
+
+	ctx := context.Background()
+	require.NoError(t, EnsureSchema(ctx, store.DB(), schema), "EnsureSchema")
+
+	got, err := store.ListBenchmarkVerdicts(ctx)
+	require.NoError(t, err)
+	assert.Empty(t, got)
+
+	require.NoError(t, store.SetBenchmarkVerdict(
+		"trace-1", "incorrect", "first",
+	))
+	got, err = store.ListBenchmarkVerdicts(ctx)
+	require.NoError(t, err)
+	require.Contains(t, got, "trace-1")
+	assert.Equal(t, "incorrect", got["trace-1"].EffectiveRating)
+	assert.Equal(t, "first", got["trace-1"].Note)
+	assert.NotEmpty(t, got["trace-1"].UpdatedAt)
+
+	require.NoError(t, store.SetBenchmarkVerdict(
+		"trace-1", "helpful", "changed",
+	))
+	got, err = store.ListBenchmarkVerdicts(ctx)
+	require.NoError(t, err)
+	require.Contains(t, got, "trace-1")
+	assert.Equal(t, "helpful", got["trace-1"].EffectiveRating)
+	assert.Equal(t, "changed", got["trace-1"].Note)
+
+	require.NoError(t, store.DeleteBenchmarkVerdict("trace-1"))
+	got, err = store.ListBenchmarkVerdicts(ctx)
+	require.NoError(t, err)
+	assert.Empty(t, got)
+}
+
 func TestPushPreservesMultiplePGPinsBySourceUUID(t *testing.T) {
 	pgURL := testPGURL(t)
 	cleanPGSchema(t, pgURL)

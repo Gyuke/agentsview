@@ -574,6 +574,96 @@ components:
       required:
         - session_ids
       type: object
+    BenchmarkCheck:
+      additionalProperties: false
+      properties:
+        detail:
+          type: string
+        missing:
+          items:
+            type: string
+          type: array
+        ok:
+          type: boolean
+        reports_dir:
+          type: string
+        script:
+          type: string
+      required:
+        - ok
+        - missing
+      type: object
+    BenchmarkReportList:
+      additionalProperties: false
+      properties:
+        dir:
+          type: string
+        dir_exists:
+          type: boolean
+        reports:
+          items:
+            $ref: "#/components/schemas/BenchmarkReportMeta"
+          type: array
+      required:
+        - reports
+        - dir
+        - dir_exists
+      type: object
+    BenchmarkReportMeta:
+      additionalProperties: false
+      properties:
+        file:
+          type: string
+        generated_at:
+          type: string
+        sample_count:
+          format: int64
+          type: integer
+        size_bytes:
+          format: int64
+          type: integer
+        source:
+          type: string
+        summary:
+          additionalProperties:
+            format: int64
+            type: integer
+          type: object
+      required:
+        - file
+        - generated_at
+        - sample_count
+        - source
+        - summary
+        - size_bytes
+      type: object
+    BenchmarkRunStatus:
+      additionalProperties: false
+      properties:
+        elapsed_sec:
+          format: double
+          type: number
+        error:
+          type: string
+        finished_at:
+          type: string
+        last_report:
+          type: string
+        output_tail:
+          items:
+            type: string
+          type: array
+        running:
+          type: boolean
+        started_at:
+          type: string
+        status:
+          type: string
+      required:
+        - status
+        - running
+        - elapsed_sec
+      type: object
     BranchesResponse:
       additionalProperties: false
       properties:
@@ -6047,6 +6137,330 @@ components:
         - gist_url
         - view_url
         - raw_url
+      type: object
+    RagAuditDeleteResult:
+      additionalProperties: false
+      properties:
+        backup_path:
+          type: string
+        deleted_lines:
+          format: int64
+          type: integer
+        remaining_lines:
+          format: int64
+          type: integer
+      required:
+        - deleted_lines
+        - remaining_lines
+      type: object
+    RagAuditDocStat:
+      additionalProperties: false
+      properties:
+        consumed_chunk_count:
+          format: int64
+          type: integer
+        consumed_ratio:
+          format: double
+          type: number
+        doc_path:
+          type: string
+        example_queries:
+          items:
+            type: string
+          type: array
+        kb_name:
+          type: string
+        last_triggered:
+          type: string
+        retrieved_chunk_count:
+          format: int64
+          type: integer
+        trigger_count:
+          format: int64
+          type: integer
+      required:
+        - kb_name
+        - doc_path
+        - trigger_count
+        - retrieved_chunk_count
+        - consumed_chunk_count
+        - consumed_ratio
+      type: object
+    RagAuditDocs:
+      additionalProperties: false
+      properties:
+        bad_lines:
+          format: int64
+          type: integer
+        distinct_docs:
+          format: int64
+          type: integer
+        docs:
+          items:
+            $ref: "#/components/schemas/RagAuditDocStat"
+          type: array
+        matched_search_events:
+          format: int64
+          type: integer
+        total_events:
+          format: int64
+          type: integer
+        triggered_docs:
+          format: int64
+          type: integer
+      required:
+        - docs
+        - total_events
+        - matched_search_events
+        - distinct_docs
+        - triggered_docs
+        - bad_lines
+      type: object
+    RagAuditEvent:
+      additionalProperties: false
+      properties:
+        adopted:
+          type: boolean
+        duration_ms:
+          format: int64
+          minimum: 0
+          type: integer
+        hit_count:
+          format: int64
+          type: integer
+        hits:
+          items:
+            $ref: "#/components/schemas/RagAuditHit"
+          type: array
+        kb_name:
+          type: string
+        note:
+          type: string
+        operation:
+          type: string
+        origin:
+          type: string
+        query:
+          type: string
+        rerank_enabled:
+          type: boolean
+        score_threshold:
+          format: double
+          type: number
+        session_id:
+          type: string
+        strategy:
+          type: string
+        timestamp:
+          type: string
+        tool:
+          type: string
+        top_k:
+          format: int64
+          type: integer
+        trace_id:
+          type: string
+        used_chunk_ids:
+          items:
+            type: string
+          type: array
+      required:
+        - timestamp
+        - session_id
+        - tool
+        - kb_name
+        - query
+      type: object
+    RagAuditEvents:
+      additionalProperties: false
+      properties:
+        bad_lines:
+          format: int64
+          type: integer
+        events:
+          items:
+            $ref: "#/components/schemas/RagAuditEvent"
+          type: array
+        total:
+          format: int64
+          type: integer
+      required:
+        - events
+        - total
+        - bad_lines
+      type: object
+    RagAuditFeedback:
+      additionalProperties: false
+      properties:
+        comment:
+          type: string
+        created_at:
+          type: string
+        rating:
+          type: string
+        reason:
+          type: string
+        reviewer:
+          type: string
+        session_id:
+          type: string
+        trace_id:
+          type: string
+      required:
+        - trace_id
+        - session_id
+        - reviewer
+        - rating
+        - created_at
+      type: object
+    RagAuditFeedbackList:
+      additionalProperties: false
+      properties:
+        feedback:
+          items:
+            $ref: "#/components/schemas/RagAuditFeedback"
+          type: array
+        total:
+          format: int64
+          type: integer
+      required:
+        - feedback
+        - total
+      type: object
+    RagAuditHit:
+      additionalProperties: false
+      properties:
+        chunk_id:
+          type: string
+        doc_path:
+          type: string
+        score:
+          format: double
+          type: number
+      required:
+        - doc_path
+        - chunk_id
+        - score
+      type: object
+    RagAuditSession:
+      additionalProperties: false
+      properties:
+        event_count:
+          format: int64
+          type: integer
+        first_ts:
+          type: string
+        last_ts:
+          type: string
+        session_id:
+          type: string
+      required:
+        - session_id
+        - event_count
+        - first_ts
+        - last_ts
+      type: object
+    RagAuditSessionList:
+      additionalProperties: false
+      properties:
+        bad_lines:
+          format: int64
+          type: integer
+        sessions:
+          items:
+            $ref: "#/components/schemas/RagAuditSession"
+          type: array
+        total:
+          format: int64
+          type: integer
+      required:
+        - sessions
+        - total
+        - bad_lines
+      type: object
+    RagAuditTraceDeleteResult:
+      additionalProperties: false
+      properties:
+        backup_path:
+          type: string
+        deleted_audit_lines:
+          format: int64
+          type: integer
+        deleted_feedback_rows:
+          format: int64
+          type: integer
+        deleted_feedback_targets:
+          format: int64
+          type: integer
+        deleted_verdicts:
+          format: int64
+          type: integer
+        remaining_audit_lines:
+          format: int64
+          type: integer
+      required:
+        - deleted_audit_lines
+        - remaining_audit_lines
+        - deleted_feedback_targets
+        - deleted_feedback_rows
+        - deleted_verdicts
+      type: object
+    RagBenchmarkVerdictBody:
+      additionalProperties: false
+      properties:
+        effective_rating:
+          description: helpful | incorrect | needs_improvement
+          type: string
+        note:
+          description: Optional note explaining the verdict
+          type: string
+        trace_id:
+          description: Audit trace_id being adjudicated
+          type: string
+      required:
+        - trace_id
+        - effective_rating
+      type: object
+    RagBenchmarkVerdictItem:
+      additionalProperties: false
+      properties:
+        effective_rating:
+          type: string
+        note:
+          type: string
+        trace_id:
+          type: string
+        updated_at:
+          type: string
+      required:
+        - trace_id
+        - effective_rating
+        - updated_at
+      type: object
+    RagBenchmarkVerdictList:
+      additionalProperties: false
+      properties:
+        total:
+          format: int64
+          type: integer
+        verdicts:
+          items:
+            $ref: "#/components/schemas/RagBenchmarkVerdictItem"
+          type: array
+      required:
+        - verdicts
+        - total
+      type: object
+    RagBenchmarkVerdictResult:
+      additionalProperties: false
+      properties:
+        effective_rating:
+          type: string
+        trace_id:
+          type: string
+      required:
+        - trace_id
+        - effective_rating
       type: object
     RawSyncManifestResponse:
       additionalProperties: false
@@ -17249,6 +17663,1354 @@ paths:
       summary: Push to PostgreSQL
       tags:
         - Push
+  /api/v1/rag-audit:
+    get:
+      operationId: get-api-v1-rag-audit
+      parameters:
+        - description: Filter by OpenFang session uuid (audit session_id)
+          explode: false
+          in: query
+          name: session_id
+          schema:
+            description: Filter by OpenFang session uuid (audit session_id)
+            type: string
+        - description: Filter by knowledge base name
+          explode: false
+          in: query
+          name: kb_name
+          schema:
+            description: Filter by knowledge base name
+            type: string
+        - description: search | feedback | all (default all)
+          explode: false
+          in: query
+          name: operation
+          schema:
+            description: search | feedback | all (default all)
+            type: string
+        - description: mcp | cli | eval | all (default all)
+          explode: false
+          in: query
+          name: origin
+          schema:
+            description: mcp | cli | eval | all (default all)
+            type: string
+        - description: Max events to return (default 100)
+          explode: false
+          in: query
+          name: limit
+          schema:
+            description: Max events to return (default 100)
+            format: int64
+            maximum: 1000
+            minimum: 0
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RagAuditEvents"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: List RAG audit events
+      tags:
+        - RAG Audit
+  /api/v1/rag-audit/benchmark-check:
+    get:
+      operationId: get-api-v1-rag-audit-benchmark-check
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BenchmarkCheck"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: Check attribution prerequisites
+      tags:
+        - RAG Audit
+  /api/v1/rag-audit/benchmark-export:
+    get:
+      operationId: get-api-v1-rag-audit-benchmark-export
+      parameters:
+        - description: helpful | incorrect | needs_improvement | all (default all)
+          explode: false
+          in: query
+          name: rating
+          schema:
+            description: helpful | incorrect | needs_improvement | all (default all)
+            type: string
+        - description: Limit to one session uuid
+          explode: false
+          in: query
+          name: session
+          schema:
+            description: Limit to one session uuid
+            type: string
+        - description: single | agreed | split | all (default all)
+          explode: false
+          in: query
+          name: consensus
+          schema:
+            description: single | agreed | split | all (default all)
+            type: string
+        - description: Include the agent's final answer (default true)
+          explode: false
+          in: query
+          name: include_answer
+          schema:
+            default: true
+            description: Include the agent's final answer (default true)
+            type: boolean
+        - description: Truncate the final answer to this many bytes (default 4096)
+          explode: false
+          in: query
+          name: answer_max_bytes
+          schema:
+            description: Truncate the final answer to this many bytes (default 4096)
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/yaml:
+              schema:
+                contentMediaType: application/octet-stream
+                format: binary
+                type: string
+          description: OK
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+            Content-Disposition:
+              schema:
+                type: string
+            Content-Type:
+              schema:
+                type: string
+            X-Content-Type-Options:
+              schema:
+                type: string
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: Export reviewed rounds for the benchmark harness
+      tags:
+        - RAG Audit
+  /api/v1/rag-audit/benchmark-report:
+    get:
+      operationId: get-api-v1-rag-audit-benchmark-report
+      parameters:
+        - description: Report file name, e.g. 2026-09-20_131539.json
+          explode: false
+          in: query
+          name: file
+          required: true
+          schema:
+            description: Report file name, e.g. 2026-09-20_131539.json
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                contentMediaType: application/octet-stream
+                format: binary
+                type: string
+          description: OK
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+            Content-Disposition:
+              schema:
+                type: string
+            Content-Type:
+              schema:
+                type: string
+            X-Content-Type-Options:
+              schema:
+                type: string
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: Read one attribution report
+      tags:
+        - RAG Audit
+  /api/v1/rag-audit/benchmark-reports:
+    get:
+      operationId: get-api-v1-rag-audit-benchmark-reports
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BenchmarkReportList"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: List generated attribution reports
+      tags:
+        - RAG Audit
+  /api/v1/rag-audit/benchmark-run:
+    get:
+      operationId: get-api-v1-rag-audit-benchmark-run
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BenchmarkRunStatus"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: Attribution run status
+      tags:
+        - RAG Audit
+    post:
+      operationId: post-api-v1-rag-audit-benchmark-run
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BenchmarkRunStatus"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: Start an attribution run in background
+      tags:
+        - RAG Audit
+  /api/v1/rag-audit/benchmark-verdict:
+    delete:
+      operationId: delete-api-v1-rag-audit-benchmark-verdict
+      parameters:
+        - description: Audit trace_id whose verdict should be removed
+          explode: false
+          in: query
+          name: trace_id
+          schema:
+            description: Audit trace_id whose verdict should be removed
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RagBenchmarkVerdictResult"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: Remove a human verdict
+      tags:
+        - RAG Audit
+    get:
+      operationId: get-api-v1-rag-audit-benchmark-verdict
+      parameters:
+        - description: Limit to one audit trace_id
+          explode: false
+          in: query
+          name: trace_id
+          schema:
+            description: Limit to one audit trace_id
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RagBenchmarkVerdictList"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: List human verdicts for reviewed rounds
+      tags:
+        - RAG Audit
+    put:
+      operationId: put-api-v1-rag-audit-benchmark-verdict
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RagBenchmarkVerdictBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RagBenchmarkVerdictResult"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: Record a human verdict for a reviewed round
+      tags:
+        - RAG Audit
+  /api/v1/rag-audit/docs:
+    get:
+      operationId: get-api-v1-rag-audit-docs
+      parameters:
+        - description: mcp | cli | eval | all (default mcp, 与 doc-stats 一致排除 eval/demo 噪音)
+          explode: false
+          in: query
+          name: origin
+          schema:
+            description: mcp | cli | eval | all (default mcp, 与 doc-stats 一致排除 eval/demo 噪音)
+            type: string
+        - description: Filter by knowledge base name
+          explode: false
+          in: query
+          name: kb_name
+          schema:
+            description: Filter by knowledge base name
+            type: string
+        - description: Max docs to return (default 50)
+          explode: false
+          in: query
+          name: top
+          schema:
+            description: Max docs to return (default 50)
+            format: int64
+            maximum: 1000
+            minimum: 0
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RagAuditDocs"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: Aggregate per-document RAG usage stats
+      tags:
+        - RAG Audit
+  /api/v1/rag-audit/feedback:
+    get:
+      operationId: get-api-v1-rag-audit-feedback
+      parameters:
+        - description: Filter by OpenFang session uuid (audit session_id)
+          explode: false
+          in: query
+          name: session_id
+          schema:
+            description: Filter by OpenFang session uuid (audit session_id)
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RagAuditFeedbackList"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: List Feishu answer feedback
+      tags:
+        - RAG Audit
+  /api/v1/rag-audit/session:
+    delete:
+      operationId: delete-api-v1-rag-audit-session
+      parameters:
+        - description: Session uuid whose audit events should be deleted
+          explode: false
+          in: query
+          name: session_id
+          schema:
+            description: Session uuid whose audit events should be deleted
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RagAuditDeleteResult"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: Delete a session's RAG audit events
+      tags:
+        - RAG Audit
+  /api/v1/rag-audit/sessions:
+    get:
+      operationId: get-api-v1-rag-audit-sessions
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RagAuditSessionList"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: List sessions that have RAG audit events
+      tags:
+        - RAG Audit
+  /api/v1/rag-audit/trace:
+    delete:
+      operationId: delete-api-v1-rag-audit-trace
+      parameters:
+        - description: Trace id to delete
+          explode: false
+          in: query
+          name: trace_id
+          required: true
+          schema:
+            description: Trace id to delete
+            type: string
+        - description: Session uuid that owns the trace
+          explode: false
+          in: query
+          name: session_id
+          required: true
+          schema:
+            description: Session uuid that owns the trace
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RagAuditTraceDeleteResult"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal Server Error
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not Implemented
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad Gateway
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Service Unavailable
+        "504":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Gateway Timeout
+      summary: Delete one trace and its evaluation data
+      tags:
+        - RAG Audit
   /api/v1/raw-sync/health:
     get:
       operationId: get-api-v1-raw-sync-health

@@ -169,6 +169,13 @@ export async function orvalFetch<T>(url: string, options: ApiRequestOptions): Pr
   return body as T;
 }
 
+export async function callGenerated<T>(
+  request: (options?: { signal?: AbortSignal }) => Promise<T>,
+  signal?: AbortSignal,
+): Promise<T> {
+  return request(signal ? { signal } : undefined);
+}
+
 export function isNotFoundError(err: unknown): boolean {
   return err instanceof ApiError && err.status === 404;
 }

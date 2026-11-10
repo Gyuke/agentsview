@@ -15,6 +15,9 @@ func TestStubEmptyResults(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, insights)
 	assert.Empty(t, insights)
+	verdicts, err := store.ListBenchmarkVerdicts(t.Context())
+	require.NoError(t, err)
+	assert.Empty(t, verdicts)
 
 	insight, err := store.GetInsight(t.Context(), 1)
 	require.NoError(t, err)
@@ -43,6 +46,8 @@ func TestUnsupportedStubs(t *testing.T) {
 		{"StarSession", func() (any, error) { return store.StarSession(ctx, "missing") }, false},
 		{"UnstarSession", func() (any, error) { return nil, store.UnstarSession(ctx, "missing") }, nil},
 		{"BulkStarSessions", func() (any, error) { return nil, store.BulkStarSessions(ctx, []string{"missing"}) }, nil},
+		{"SetBenchmarkVerdict", func() (any, error) { return nil, store.SetBenchmarkVerdict("tr-missing", "helpful", "") }, nil},
+		{"DeleteBenchmarkVerdict", func() (any, error) { return nil, store.DeleteBenchmarkVerdict("tr-missing") }, nil},
 		{"PinMessage", func() (any, error) { return store.PinMessage(ctx, "missing", 1, nil) }, int64(0)},
 		{"UnpinMessage", func() (any, error) { return nil, store.UnpinMessage(ctx, "missing", 1) }, nil},
 	}

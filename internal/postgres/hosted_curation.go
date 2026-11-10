@@ -16,6 +16,16 @@ func hostedCurationError(err error) error {
 	return err
 }
 
+// Benchmark verdicts have no tenant key, so hosted stores must not expose
+// or modify the shared physical table.
+func (h *HostedStore) SetBenchmarkVerdict(_, _, _ string) error { return db.ErrReadOnly }
+
+func (h *HostedStore) DeleteBenchmarkVerdict(_ string) error { return db.ErrReadOnly }
+
+func (h *HostedStore) ListBenchmarkVerdicts(_ context.Context) (map[string]db.BenchmarkVerdict, error) {
+	return map[string]db.BenchmarkVerdict{}, nil
+}
+
 func (h *HostedStore) curate(ctx context.Context, alias, field string, value any) error {
 	target, err := h.resolve(ctx, alias)
 	if err != nil {

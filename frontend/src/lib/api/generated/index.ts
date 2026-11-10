@@ -18,6 +18,7 @@ export * as MetadataService from "./metadata/metadata.ts";
 export * as OpenersService from "./openers/openers.ts";
 export * as PinsService from "./pins/pins.ts";
 export * as PushService from "./push/push.ts";
+export * as RagAuditService from "./rag-audit/rag-audit.ts";
 export * as RawSyncService from "./raw-sync/raw-sync.ts";
 export * as RecallService from "./recall/recall.ts";
 export * as RecentEditsService from "./recent-edits/recent-edits.ts";

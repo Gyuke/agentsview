@@ -1784,3 +1784,14 @@ CREATE TABLE IF NOT EXISTS codex_fork_state (
  session_id TEXT PRIMARY KEY REFERENCES sessions(id) ON DELETE CASCADE,
  state_json TEXT NOT NULL
 );
+
+-- RAG benchmark verdicts: the human's authoritative rating for a reviewed
+-- RAG round (keyed by audit trace_id). Recorded when reviewers disagree and
+-- someone adjudicates in the UI; the benchmark export prefers it over any
+-- derived value.
+CREATE TABLE IF NOT EXISTS rag_benchmark_verdicts (
+    trace_id         TEXT PRIMARY KEY,
+    effective_rating TEXT NOT NULL,
+    note             TEXT,
+    updated_at       TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);

@@ -21968,6 +21968,38 @@ func (e *Engine) syncSingleSessionContext(ctx context.Context, sessionID string,
 				break
 			}
 		}
+	case parser.AgentOpenFang:
+		// path is <openfangDir>/workspaces/<workspace>/sessions/<uuid>.jsonl
+		//    or <openfangDir>/<workspace>/sessions/<uuid>.jsonl when the
+		// configured root already points at workspaces/.
+		for _, openfangDir := range e.sources().agentDirs[parser.AgentOpenFang] {
+			rel, ok := isUnder(openfangDir, path)
+			if !ok {
+				continue
+			}
+			parts := strings.Split(rel, string(filepath.Separator))
+			switch {
+			case len(parts) >= 2 && parts[0] == "workspaces":
+				file.Project = parts[1]
+			case len(parts) >= 1:
+				file.Project = parts[0]
+			}
+			break
+		}
+		if file.Project == "" {
+			if sess, _ := e.db.GetSession(ctx, sessionID); sess != nil &&
+				sess.Project != "" &&
+				!parser.NeedsProjectReparse(sess.Project) {
+				file.Project = sess.Project
+			}
+		}
+		if file.Project == "" {
+			bareID := strings.TrimPrefix(sessionID, def.IDPrefix)
+			if workspace, _, ok := strings.Cut(bareID, ":"); ok &&
+				workspace != "" {
+				file.Project = workspace
+			}
+		}
 	case parser.AgentReasonix:
 		if classified, ok := e.classifyReasonixPath(path); ok {
 			file.Project = classified.Project

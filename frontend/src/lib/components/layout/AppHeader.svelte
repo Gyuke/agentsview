@@ -95,6 +95,7 @@
     "trash",
     "recent-edits",
     "data",
+    "rag-audit",
   ] as const;
 
   const frictionNavVisible = $derived(sync.serverVersion?.friction_readable === true);
@@ -111,6 +112,7 @@
     { id: "trash", label: m.nav_trash() },
     { id: "recent-edits", label: m.nav_recent_edits() },
     { id: "data", label: m.nav_data() },
+    { id: "rag-audit", label: "RAG 审计" },
   ]);
 
   const activeTab = $derived(

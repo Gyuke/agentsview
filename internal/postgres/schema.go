@@ -354,6 +354,13 @@ CREATE TABLE IF NOT EXISTS starred_sessions (
         REFERENCES sessions(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS rag_benchmark_verdicts (
+    trace_id         TEXT PRIMARY KEY,
+    effective_rating TEXT NOT NULL,
+    note             TEXT,
+    updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS excluded_sessions (
     id         TEXT PRIMARY KEY,
     include_codex_pages BOOLEAN NOT NULL DEFAULT FALSE,

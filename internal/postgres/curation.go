@@ -10,6 +10,59 @@ import (
 	"go.kenn.io/agentsview/internal/db"
 )
 
+// SetBenchmarkVerdict records or replaces the adjudicated rating for a trace.
+func (s *Store) SetBenchmarkVerdict(traceID, rating, note string) error {
+	if _, err := s.pg.ExecContext(context.Background(), `
+		INSERT INTO rag_benchmark_verdicts (trace_id, effective_rating, note, updated_at)
+		VALUES ($1, $2, $3, NOW())
+		ON CONFLICT (trace_id) DO UPDATE SET
+			effective_rating = EXCLUDED.effective_rating,
+			note             = EXCLUDED.note,
+			updated_at       = EXCLUDED.updated_at`,
+		traceID, rating, note,
+	); err != nil {
+		return fmt.Errorf("setting benchmark verdict for %s: %w", traceID, err)
+	}
+	return nil
+}
+
+// DeleteBenchmarkVerdict removes an adjudication for a trace.
+func (s *Store) DeleteBenchmarkVerdict(traceID string) error {
+	if _, err := s.pg.ExecContext(context.Background(),
+		`DELETE FROM rag_benchmark_verdicts WHERE trace_id = $1`, traceID,
+	); err != nil {
+		return fmt.Errorf("deleting benchmark verdict for %s: %w", traceID, err)
+	}
+	return nil
+}
+
+// ListBenchmarkVerdicts returns every recorded verdict, keyed by trace_id.
+func (s *Store) ListBenchmarkVerdicts(
+	ctx context.Context,
+) (map[string]db.BenchmarkVerdict, error) {
+	rows, err := s.pg.QueryContext(ctx, `
+		SELECT trace_id, effective_rating, COALESCE(note, ''), updated_at
+		FROM rag_benchmark_verdicts`)
+	if err != nil {
+		return nil, fmt.Errorf("listing benchmark verdicts: %w", err)
+	}
+	defer rows.Close()
+
+	out := map[string]db.BenchmarkVerdict{}
+	for rows.Next() {
+		var v db.BenchmarkVerdict
+		var updated time.Time
+		if err := rows.Scan(
+			&v.TraceID, &v.EffectiveRating, &v.Note, &updated,
+		); err != nil {
+			return nil, fmt.Errorf("scanning benchmark verdict: %w", err)
+		}
+		v.UpdatedAt = updated.UTC().Format(time.RFC3339Nano)
+		out[v.TraceID] = v
+	}
+	return out, rows.Err()
+}
+
 func lockPinnedMessagesSession(
 	ctx context.Context, tx *sql.Tx, sessionID string,
 ) error {

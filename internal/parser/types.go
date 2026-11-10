@@ -79,6 +79,7 @@ const (
 	AgentVibe           AgentType = "vibe"
 	AgentZed            AgentType = "zed"
 	AgentQwenPaw        AgentType = "qwenpaw"
+	AgentOpenFang       AgentType = "openfang"
 	AgentGptme          AgentType = "gptme"
 	AgentQoder          AgentType = "qoder"
 	AgentShelley        AgentType = "shelley"
@@ -1026,6 +1027,15 @@ var Registry = []AgentDef{
 		ConfigKey:   "qwenpaw_dirs",
 		DefaultDirs: []string{".copaw/workspaces"},
 		IDPrefix:    "qwenpaw:",
+		FileBased:   true,
+	},
+	{
+		Type:        AgentOpenFang,
+		DisplayName: "OpenFang",
+		EnvVar:      "OPENFANG_DIR",
+		ConfigKey:   "openfang_dirs",
+		DefaultDirs: []string{".openfang"},
+		IDPrefix:    "openfang:",
 		FileBased:   true,
 	},
 	{

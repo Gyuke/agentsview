@@ -1312,6 +1312,8 @@ func providerFactoryForDef(def AgentDef) ProviderFactory {
 		return newOpenHandsProviderFactory(def)
 	case AgentOpenCode:
 		return newOpenCodeProviderFactory(def)
+	case AgentOpenFang:
+		return newOpenFangProviderFactory(def)
 	case AgentOpenCodeReview:
 		return newOpenCodeReviewProviderFactory(def)
 	case AgentOMP, AgentOMO, AgentStepCode:

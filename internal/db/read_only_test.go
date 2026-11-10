@@ -240,6 +240,12 @@ func TestOpenReadOnlyWriteMethodsReturnErrReadOnly(t *testing.T) {
 	requireReadOnlyOp(t, "BulkStarSessions", func() error {
 		return readonly.BulkStarSessions(t.Context(), nil)
 	})
+	requireReadOnlyOp(t, "SetBenchmarkVerdict", func() error {
+		return readonly.SetBenchmarkVerdict("trace-1", "incorrect", "")
+	})
+	requireReadOnlyOp(t, "DeleteBenchmarkVerdict", func() error {
+		return readonly.DeleteBenchmarkVerdict("trace-1")
+	})
 	requireReadOnlyOp(t, "DeleteParserExcludedSessions", func() error {
 		_, err := readonly.DeleteParserExcludedSessions(t.Context(), nil)
 		return err
@@ -352,6 +358,7 @@ func TestOpenReadOnlyRejectsMissingReadTable(t *testing.T) {
 		{"usage_events", "id"},
 		{"session_plan_usage", "session_id"},
 		{"pinned_messages", "id"},
+		{"rag_benchmark_verdicts", "trace_id"},
 		{"session_project_assignments", "session_id"},
 		{"secret_findings", "id"},
 		{"pg_sync_state", "key"},

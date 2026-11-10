@@ -79,6 +79,7 @@
   import TrashPage from "./lib/components/trash/TrashPage.svelte";
   import RecentEditsPage from "./lib/components/recentedits/RecentEditsPage.svelte";
   import DataPage from "./lib/components/data/DataPage.svelte";
+  import RagAuditPage from "./lib/components/rag/RagAuditPage.svelte";
   import SettingsPage from "./lib/components/settings/SettingsPage.svelte";
   import { sessions, filtersToParams } from "./lib/stores/sessions.svelte.js";
   import { messages } from "./lib/stores/messages.svelte.js";
@@ -932,6 +933,10 @@
 {:else if router.route === "data"}
   <div class="fixed-page-host">
     <DataPage />
+  </div>
+{:else if router.route === "rag-audit"}
+  <div class="page-scroll">
+    <RagAuditPage />
   </div>
 {:else if router.route === "settings"}
   <div class="fixed-page-host settings-page-host">

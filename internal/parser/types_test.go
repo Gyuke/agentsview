@@ -235,6 +235,7 @@ func TestAgentByType(t *testing.T) {
 		{AgentStepCode, true},
 		{AgentDevin, true},
 		{AgentDeepSeekTUI, true},
+		{AgentOpenFang, true},
 		{AgentDeepSeekHarness, true},
 		{AgentCodexCloud, true},
 		{AgentCline, true},
@@ -410,6 +411,12 @@ func TestAgentByPrefix(t *testing.T) {
 			true,
 		},
 		{
+			"openfang prefix",
+			"openfang:delegate-agent:sess-id",
+			AgentOpenFang,
+			true,
+		},
+		{
 			"deepseek tui prefix",
 			"deepseek-tui:sess-id",
 			AgentDeepSeekTUI,
@@ -512,6 +519,7 @@ func TestRegistryCompleteness(t *testing.T) {
 		AgentCommandCode,
 		AgentDeepSeekTUI,
 		AgentDeepSeekHarness,
+		AgentOpenFang,
 		AgentCodexCloud,
 		AgentOpenClaw,
 		AgentQClaw,
@@ -685,6 +693,82 @@ func TestAgentByPrefixCowork(t *testing.T) {
 	def, ok := AgentByPrefix("cowork:c0000000-0000-4000-8000-000000000001")
 	require.True(t, ok, "cowork-prefixed ID should resolve")
 	assert.Equal(t, AgentCowork, def.Type)
+}
+
+func TestMiMoCodeRegistryEntry(t *testing.T) {
+	def, ok := AgentByType(AgentMiMoCode)
+	require.True(t, ok, "AgentMiMoCode missing from Registry")
+	require.True(t, def.FileBased, "MiMoCode FileBased")
+	assert.Equal(t, "MIMOCODE_DIR", def.EnvVar)
+	assert.Equal(t, "mimocode_dirs", def.ConfigKey)
+	assert.Equal(t, []string{".local/share/mimocode"}, def.DefaultDirs)
+	assert.Equal(t, "mimocode:", def.IDPrefix)
+	want := []string{
+		"storage/session_diff",
+		"storage/message",
+		"storage/part",
+	}
+	require.Truef(t, slices.Equal(def.WatchSubdirs, want),
+		"MiMoCode WatchSubdirs = %v, want %v", def.WatchSubdirs, want)
+}
+
+func TestCommandCodeRegistryEntry(t *testing.T) {
+	def, ok := AgentByType(AgentCommandCode)
+	require.True(t, ok, "AgentCommandCode missing from Registry")
+	require.True(t, def.FileBased, "Command Code FileBased")
+	assert.Equal(t, []string{".commandcode/projects"}, def.DefaultDirs)
+	assert.Equal(t, "commandcode:", def.IDPrefix)
+}
+
+func TestDevinRegistryEntry(t *testing.T) {
+	def, ok := AgentByType(AgentDevin)
+	require.True(t, ok, "AgentDevin missing from Registry")
+	require.False(t, def.FileBased, "Devin FileBased")
+	assert.Equal(t, "Devin", def.DisplayName)
+	assert.Equal(t, "DEVIN_DIR", def.EnvVar)
+	assert.Equal(t, "devin_dirs", def.ConfigKey)
+	assert.Equal(t, []string{
+		"Library/Application Support/devin",
+		".local/share/devin",
+	}, def.DefaultDirs)
+	assert.Equal(t, "devin:", def.IDPrefix)
+}
+
+func TestDeepSeekTUIRegistryEntry(t *testing.T) {
+	def, ok := AgentByType(AgentDeepSeekTUI)
+	require.True(t, ok, "AgentDeepSeekTUI missing from Registry")
+	require.True(t, def.FileBased, "DeepSeek TUI FileBased")
+	assert.Equal(t, "DeepSeek TUI", def.DisplayName)
+	assert.Equal(t, "DEEPSEEK_TUI_SESSIONS_DIR", def.EnvVar)
+	assert.Equal(t, "deepseek_tui_sessions_dirs", def.ConfigKey)
+	assert.Equal(t, []string{".codewhale/sessions", ".deepseek/sessions"}, def.DefaultDirs)
+	assert.Equal(t, "deepseek-tui:", def.IDPrefix)
+}
+
+func TestDeepSeekHarnessRegistryEntry(t *testing.T) {
+	def, ok := AgentByType(AgentDeepSeekHarness)
+	require.True(t, ok, "AgentDeepSeekHarness missing from Registry")
+	require.True(t, def.FileBased, "DeepSeek Harness FileBased")
+	assert.Equal(t, "DeepSeek Harness", def.DisplayName)
+	assert.Equal(t, "DEEPSEEK_HARNESS_SESSIONS_DIR", def.EnvVar)
+	assert.Equal(t, "DSH_HOME", def.DefaultRootEnvVar)
+	assert.Equal(t, "deepseek_harness_sessions_dirs", def.ConfigKey)
+	assert.Equal(t, []string{".dsh/sessions"}, def.DefaultDirs)
+	assert.Equal(t, "deepseek-harness:", def.IDPrefix)
+}
+
+func TestOpenFangRegistryEntry(t *testing.T) {
+	def, ok := AgentByType(AgentOpenFang)
+	require.True(t, ok, "AgentOpenFang missing from Registry")
+	require.True(t, def.FileBased, "OpenFang FileBased")
+	assert.Equal(t, "OpenFang", def.DisplayName)
+	assert.Equal(t, "OPENFANG_DIR", def.EnvVar)
+	assert.Equal(t, "openfang_dirs", def.ConfigKey)
+	assert.Equal(t, []string{".openfang"}, def.DefaultDirs)
+	assert.Equal(t, "openfang:", def.IDPrefix)
+	provider, ok := NewProvider(AgentOpenFang, ProviderConfig{})
+	require.True(t, ok, "OpenFang provider")
+	assert.Equal(t, AgentOpenFang, provider.Definition().Type)
 }
 
 func TestResolveOpenCodeSourcePrefersStorage(t *testing.T) {
@@ -1153,4 +1237,58 @@ func TestApplyUsageEventTokenTotals(t *testing.T) {
 	// Event 1 context = 1000 + 500 + 300 = 1800
 	// Event 2 context = 800 + 1200 + 100 = 2100
 	assert.Equal(t, 2100, sess.PeakContextTokens)
+}
+
+func TestReasonixRegistryEntry(t *testing.T) {
+	// Find Reasonix in the registry
+	var reasonixDef *AgentDef
+	for _, def := range Registry {
+		if def.Type == AgentReasonix {
+			reasonixDef = &def
+			break
+		}
+	}
+	require.NotNil(t, reasonixDef, "AgentReasonix must be in Registry")
+
+	// Verify basic properties
+	assert.Equal(t, AgentReasonix, reasonixDef.Type)
+	assert.Equal(t, "Reasonix", reasonixDef.DisplayName)
+	assert.Equal(t, "REASONIX_DIR", reasonixDef.EnvVar)
+	assert.Equal(t, "reasonix_dirs", reasonixDef.ConfigKey)
+	assert.Equal(t, "reasonix:", reasonixDef.IDPrefix)
+	assert.True(t, reasonixDef.FileBased)
+
+	// Verify watch subdirs
+	assert.Contains(t, reasonixDef.WatchSubdirs, "sessions")
+	assert.Contains(t, reasonixDef.WatchSubdirs, "archive")
+
+	// Verify default dirs contain .reasonix and Windows path
+	assert.True(t, len(reasonixDef.DefaultDirs) > 0)
+	hasUnix := false
+	hasWindows := false
+	for _, dir := range reasonixDef.DefaultDirs {
+		if dir == ".reasonix" {
+			hasUnix = true
+		}
+		if dir == "AppData/Roaming/reasonix" {
+			hasWindows = true
+		}
+	}
+	assert.True(t, hasUnix, "DefaultDirs should contain .reasonix")
+	assert.True(t, hasWindows, "DefaultDirs should contain AppData/Roaming/reasonix")
+}
+
+func TestFreebuffNotRegistered(t *testing.T) {
+	// Freebuff intentionally shares the Codebuff provider and is NOT
+	// registered in Registry. Freebuff sessions do carry agent =
+	// AgentFreebuff with freebuff:-prefixed IDs (set by
+	// parseCodebuffSession when run-state.json agentType contains
+	// "free"), but there is no separate registry entry or factory:
+	// sync canonicalizes freebuff onto the Codebuff provider def
+	// (AgentByPrefix maps freebuff: IDs to the Codebuff def), so
+	// lifecycle operations over the shared roots run once.
+	for _, def := range Registry {
+		assert.NotEqualf(t, AgentFreebuff, def.Type,
+			"AgentFreebuff must not be registered — it shares the Codebuff provider")
+	}
 }

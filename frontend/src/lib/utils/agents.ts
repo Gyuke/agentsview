@@ -62,6 +62,7 @@ export const KNOWN_AGENTS: readonly AgentMeta[] = [
   },
   { name: "qwen", color: "var(--accent-cyan)", label: "Qwen Code" },
   { name: "qwenpaw", color: "var(--accent-cyan)", label: "QwenPaw" },
+  { name: "openfang", color: "var(--accent-indigo)", label: "OpenFang" },
   {
     name: "deepseek-tui",
     color: "var(--accent-cyan)",

@@ -1067,15 +1067,21 @@ type Config struct {
 	DefaultClickHouse    string                      `json:"default_clickhouse,omitempty" toml:"default_clickhouse"`
 	ClickHouseTargets    map[string]ClickHouseConfig `json:"-" toml:"-"`
 	DuckDB               DuckDBConfig                `json:"duckdb,omitempty" toml:"duckdb"`
-	Vector               VectorConfig                `json:"vector,omitempty" toml:"vector"`
-	Recall               RecallConfig                `json:"recall,omitempty" toml:"recall"`
-	Integrations         IntegrationsConfig          `json:"integrations,omitempty" toml:"integrations"`
-	Insights             InsightsConfig              `json:"insights,omitempty" toml:"insights"`
-	Kata                 KataConfig                  `json:"-" toml:"kata"`
-	Friction             FrictionConfig              `json:"friction,omitempty" toml:"friction"`
-	Automated            AutomatedConfig             `json:"automated,omitempty" toml:"automated"`
-	Agent                map[string]AgentConfig      `json:"agent,omitempty" toml:"agent"`
-	WriteTimeout         time.Duration               `json:"-" toml:"-"`
+	RAGAuditPath         string                      `json:"rag_audit_path,omitempty" toml:"rag_audit_path"`
+	OpenFangDBPath       string                      `json:"openfang_db_path,omitempty" toml:"openfang_db_path"`
+	// RAG failure-attribution report paths; each defaults from RAGAuditPath.
+	BenchmarkScriptPath string                 `json:"benchmark_script_path,omitempty" toml:"benchmark_script_path"`
+	BenchmarkProjectDir string                 `json:"benchmark_project_dir,omitempty" toml:"benchmark_project_dir"`
+	BenchmarkReportsDir string                 `json:"benchmark_reports_dir,omitempty" toml:"benchmark_reports_dir"`
+	Vector              VectorConfig           `json:"vector,omitempty" toml:"vector"`
+	Recall              RecallConfig           `json:"recall,omitempty" toml:"recall"`
+	Integrations        IntegrationsConfig     `json:"integrations,omitempty" toml:"integrations"`
+	Insights            InsightsConfig         `json:"insights,omitempty" toml:"insights"`
+	Kata                KataConfig             `json:"-" toml:"kata"`
+	Friction            FrictionConfig         `json:"friction,omitempty" toml:"friction"`
+	Automated           AutomatedConfig        `json:"automated,omitempty" toml:"automated"`
+	Agent               map[string]AgentConfig `json:"agent,omitempty" toml:"agent"`
+	WriteTimeout        time.Duration          `json:"-" toml:"-"`
 	// InstallationID identifies this data directory independently of its label.
 	InstallationID string `json:"-" toml:"-"`
 	// InstallationCreatedAt is when InstallationID was created, or zero for
@@ -1908,6 +1914,11 @@ func (c *Config) applyConfigTOML(data string) error {
 		DefaultClickHouse              string                 `toml:"default_clickhouse"`
 		ClickHouse                     ClickHouseConfig       `toml:"clickhouse"`
 		DuckDB                         DuckDBConfig           `toml:"duckdb"`
+		RAGAuditPath                   string                 `toml:"rag_audit_path"`
+		OpenFangDBPath                 string                 `toml:"openfang_db_path"`
+		BenchmarkScriptPath            string                 `toml:"benchmark_script_path"`
+		BenchmarkProjectDir            string                 `toml:"benchmark_project_dir"`
+		BenchmarkReportsDir            string                 `toml:"benchmark_reports_dir"`
 		Vector                         VectorConfig           `toml:"vector"`
 		Recall                         RecallConfig           `toml:"recall"`
 		Integrations                   IntegrationsConfig     `toml:"integrations"`
@@ -2139,6 +2150,21 @@ func (c *Config) applyConfigTOML(data string) error {
 	// the fields they set, preserving config-file settings.
 	if file.DuckDB.Path != "" && c.DuckDB.Path == "" {
 		c.DuckDB.Path = file.DuckDB.Path
+	}
+	if file.RAGAuditPath != "" && c.RAGAuditPath == "" {
+		c.RAGAuditPath = file.RAGAuditPath
+	}
+	if file.OpenFangDBPath != "" && c.OpenFangDBPath == "" {
+		c.OpenFangDBPath = file.OpenFangDBPath
+	}
+	if file.BenchmarkScriptPath != "" && c.BenchmarkScriptPath == "" {
+		c.BenchmarkScriptPath = file.BenchmarkScriptPath
+	}
+	if file.BenchmarkProjectDir != "" && c.BenchmarkProjectDir == "" {
+		c.BenchmarkProjectDir = file.BenchmarkProjectDir
+	}
+	if file.BenchmarkReportsDir != "" && c.BenchmarkReportsDir == "" {
+		c.BenchmarkReportsDir = file.BenchmarkReportsDir
 	}
 	if file.DuckDB.URL != "" && c.DuckDB.URL == "" {
 		c.DuckDB.URL = file.DuckDB.URL
@@ -2550,6 +2576,21 @@ func (c *Config) loadEnv() {
 	}
 	if v := os.Getenv("AGENTSVIEW_DUCKDB_PATH"); v != "" {
 		c.DuckDB.Path = v
+	}
+	if v := os.Getenv("AGENTSVIEW_RAG_AUDIT_PATH"); v != "" {
+		c.RAGAuditPath = v
+	}
+	if v := os.Getenv("AGENTSVIEW_OPENFANG_DB_PATH"); v != "" {
+		c.OpenFangDBPath = v
+	}
+	if v := os.Getenv("AGENTSVIEW_BENCHMARK_SCRIPT_PATH"); v != "" {
+		c.BenchmarkScriptPath = v
+	}
+	if v := os.Getenv("AGENTSVIEW_BENCHMARK_PROJECT_DIR"); v != "" {
+		c.BenchmarkProjectDir = v
+	}
+	if v := os.Getenv("AGENTSVIEW_BENCHMARK_REPORTS_DIR"); v != "" {
+		c.BenchmarkReportsDir = v
 	}
 	if v := os.Getenv("AGENTSVIEW_DUCKDB_URL"); v != "" {
 		c.DuckDB.URL = v

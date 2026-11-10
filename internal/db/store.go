@@ -113,6 +113,11 @@ type Store interface {
 	ListStarredSessionIDs(ctx context.Context) ([]string, error)
 	BulkStarSessions(ctx context.Context, sessionIDs []string) error
 
+	// RAG benchmark verdicts.
+	SetBenchmarkVerdict(traceID, rating, note string) error
+	DeleteBenchmarkVerdict(traceID string) error
+	ListBenchmarkVerdicts(ctx context.Context) (map[string]BenchmarkVerdict, error)
+
 	// Pins.
 	PinMessage(ctx context.Context, sessionID string, messageID int64, note *string) (int64, error)
 	UnpinMessage(ctx context.Context, sessionID string, messageID int64) error

@@ -125,6 +125,23 @@ func (MirrorStubs) BulkStarSessions(ctx context.Context, sessionIDs []string) er
 	return db.ErrReadOnly
 }
 
+// SetBenchmarkVerdict rejects edits to human RAG verdicts in a mirror.
+func (MirrorStubs) SetBenchmarkVerdict(traceID, rating, note string) error {
+	return db.ErrReadOnly
+}
+
+// DeleteBenchmarkVerdict rejects edits to human RAG verdicts in a mirror.
+func (MirrorStubs) DeleteBenchmarkVerdict(traceID string) error {
+	return db.ErrReadOnly
+}
+
+// ListBenchmarkVerdicts returns the empty mirror view of human verdicts.
+func (MirrorStubs) ListBenchmarkVerdicts(
+	_ context.Context,
+) (map[string]db.BenchmarkVerdict, error) {
+	return map[string]db.BenchmarkVerdict{}, nil
+}
+
 func (MirrorStubs) PinMessage(ctx context.Context, sessionID string, messageID int64, note *string) (int64, error) {
 	return 0, db.ErrReadOnly
 }

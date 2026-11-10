@@ -1479,6 +1479,25 @@ func (d *DB) CopySessionMetadataFrom(
 		}
 	}
 
+	// Copy human benchmark verdicts. They are global user decisions keyed by
+	// trace_id and must survive the full archive rebuild just like stars and
+	// pins.
+	if oldDBHasTable(ctx, tx, "rag_benchmark_verdicts") {
+		if _, err := tx.ExecContext(ctx, `
+			INSERT INTO main.rag_benchmark_verdicts (
+				trace_id, effective_rating, note, updated_at
+			)
+			SELECT trace_id, effective_rating, note, updated_at
+			FROM old_db.rag_benchmark_verdicts
+			WHERE true
+			ON CONFLICT(trace_id) DO UPDATE SET
+				effective_rating = excluded.effective_rating,
+				note = excluded.note,
+				updated_at = excluded.updated_at`); err != nil {
+			return fmt.Errorf("copying benchmark verdicts: %w", err)
+		}
+	}
+
 	// Copy pinned messages (table may not exist in older DBs).
 	// Auto-increment message IDs differ between DBs, so old
 	// message_id must be re-resolved against the fresh rows.

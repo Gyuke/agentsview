@@ -39,6 +39,7 @@ func (s *Server) registerTypedAPIRoutes() {
 	s.registerConversationExportRoutes()
 	s.registerAssetRoutes()
 	s.registerEmbeddingsRoutes()
+	s.registerRagAuditRoutes()
 }
 
 func configureRouteGroup(group *huma.Group, tag string) {

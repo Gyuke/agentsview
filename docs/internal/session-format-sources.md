@@ -3442,6 +3442,23 @@ schemas keep their existing ordering behavior.
 - **Agentsview:** `internal/parser/commandcode.go` and
   `internal/parser/commandcode_provider.go`.
 
+## OpenFang (`openfang`)
+
+- **Format:** A best-effort JSONL mirror at
+  `<home>/workspaces/<workspace>/sessions/<session-id>.jsonl`; entries carry
+  `timestamp`, `role`, `content`, and optional `tool_use` blocks.
+- **Evidence:** `no-public-source`.
+- **Upstream:** The local OpenFang repository was checked
+  2026-11-10 at revision `fa7402033c7a750d591aaa62f0ccec4afcf0b697`.
+  Its `crates/openfang-memory/src/session.rs` defines and writes the mirror;
+  the configured workspace path is defined in
+  `crates/openfang-types/src/config/kernel.rs`. This repository is not a
+  publicly verifiable source.
+- **Usage and cost:** The JSONL mirror does not include model, token usage, or
+  cost fields; Agentsview does not derive usage from it.
+- **Agentsview:** `internal/parser/openfang.go` and
+  `internal/parser/openfang_provider.go`.
+
 ## DeepSeek TUI (`deepseek-tui`)
 
 - **Format:** Per-session JSON documents, excluding transient latest-session and

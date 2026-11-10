@@ -44,6 +44,7 @@ describe("KNOWN_AGENTS", () => {
       "prime-agent",
       "qwen",
       "qwenpaw",
+      "openfang",
       "deepseek-tui",
       "deepseek-harness",
       "openclaw",
